@@ -28,5 +28,5 @@ def rediect_url(code):
         return redirect(original_url)
     return "URL not found!"
 
-if __name__ == "__mian__":
+if __name__ == "__main__":
     app.run(debug=True)
