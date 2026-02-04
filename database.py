@@ -82,3 +82,21 @@ def increment_clicks(code: str, clicks: int):
     )
     conn.commit()
     conn.close()
+
+
+
+# get all urls
+def get_all_urls():
+    conn = get_connection()
+    c = conn.cursor()
+
+    c.execute("""
+        SELECT short_code, original_url, clicks, created_at
+        FROM urls
+        ORDER BY created_at DESC
+    """)
+
+    rows = c.fetchall()
+    conn.close()
+
+    return rows
