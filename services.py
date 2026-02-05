@@ -26,18 +26,21 @@ def is_valid_url(url: str) -> bool:
 
 
 # ---------- BASE62 ENCODING ----------
-def encode_base62(num: int) -> str:
-    if num == 0:
-        return BASE62[0]
-
+def encode_base62(num: int, length: int = 7) -> str:
     base = len(BASE62)
     encoded = []
+
+    if num == 0:
+        encoded.append(BASE62[0])
 
     while num > 0:
         encoded.append(BASE62[num % base])
         num //= base
 
-    return ''.join(reversed(encoded))
+    encoded_str = ''.join(reversed(encoded))
+
+    # Pad to fixed length
+    return encoded_str.rjust(length, BASE62[0])
 
 
 # ---------- SHORT URL CREATION ----------
