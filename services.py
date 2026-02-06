@@ -1,7 +1,7 @@
 # services.py
 
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from database import (
     insert_url_and_get_id,
     update_short_code,
@@ -79,11 +79,10 @@ def resolve_short_code(code: str):
     increment_clicks(code, clicks)
     return original_url, "ok"
 
-
-# to calculate expiry date 
 def calculate_expiry(user_expiry: str | None) -> datetime:
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc).replace(microsecond=0)
 
+    # Default expiry
     if not user_expiry:
         return now + timedelta(days=DEFAULT_EXPIRY_DAYS)
 
@@ -91,6 +90,10 @@ def calculate_expiry(user_expiry: str | None) -> datetime:
         expiry_date = datetime.fromisoformat(user_expiry)
     except ValueError:
         raise ValueError("Invalid expiry date format")
+
+    # 🔥 Make user input timezone-aware
+    if expiry_date.tzinfo is None:
+        expiry_date = expiry_date.replace(tzinfo=timezone.utc)
 
     max_allowed = now + timedelta(days=MAX_EXPIRY_DAYS)
 
@@ -100,4 +103,4 @@ def calculate_expiry(user_expiry: str | None) -> datetime:
     if expiry_date <= now:
         raise ValueError("Expiry must be in the future")
 
-    return expiry_date
+    return expiry_date.replace(microsecond=0)
